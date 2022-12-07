@@ -6,11 +6,18 @@
 /*   By: acardona <acardona@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/07 12:01:46 by acardona          #+#    #+#             */
-/*   Updated: 2022/11/11 15:27:49 by acardona         ###   ########.fr       */
+/*   Updated: 2022/12/06 04:37:39 by acardona         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "minitalk.h"
+
+static int	ft_isdigit(int c)
+{
+	if (c >= '0' && c <= '9')
+		return (1);
+	return (0);
+}
 
 static int	ft_iswhitespace(char c)
 {
