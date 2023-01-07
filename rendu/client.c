@@ -6,7 +6,7 @@
 /*   By: acardona <acardona@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/07 19:39:45 by acardona          #+#    #+#             */
-/*   Updated: 2023/01/07 22:21:38 by acardona         ###   ########.fr       */
+/*   Updated: 2023/01/07 23:25:43 by acardona         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,6 @@ int	main(int ac, char **av)
 	g_pid <<= 1;
 	str = av[2];
 	i = -1;
-	write(1, "ok\n", 3);//
 	while (str[++i])
 		if (ft_send_bits((unsigned char) str[i]))
 			return (1);
