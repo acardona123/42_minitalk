@@ -6,7 +6,7 @@
 /*   By: acardona <acardona@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/07 19:39:48 by acardona          #+#    #+#             */
-/*   Updated: 2023/01/12 18:00:59 by acardona         ###   ########.fr       */
+/*   Updated: 2023/01/12 20:36:26 by acardona         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,9 @@ int	ft_lst_read_free(t_buff **b, int error)
 
 	if (*b)
 	{
+		write(1, "\e[32mMessage from pocessus ", 27);
+		ft_putnbr_fd(g_pid, 1);
+		write(1, " : \n\e[0m", 8);
 		elem = (*b)->first;
 		while (elem)
 		{
@@ -53,9 +56,11 @@ int	ft_lst_read_free(t_buff **b, int error)
 			elem = tmp;
 		}
 		*b = 0;
+		if (!error)
+			write(1, "\n\e[32m==== End of the message ====\e[0m\n\n", 40);
 	}
 	if (error)
-		write (1, "\n\n===\n/!\\ Error detected. Message cut.\n===\n\n", 43);
+		write (1, "\n\e[31m=== Error detected. Message cut. ===\e[0m\n\n", 48);
 	g_pid = 0;
 	return (error);
 }
