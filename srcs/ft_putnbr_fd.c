@@ -1,31 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minitalk.h                                         :+:      :+:    :+:   */
+/*   ft_putnbr_fd.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: acardona <acardona@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/12/05 13:12:53 by acardona          #+#    #+#             */
-/*   Updated: 2023/01/11 23:15:35 by acardona         ###   ########.fr       */
+/*   Created: 2022/11/07 12:08:45 by acardona          #+#    #+#             */
+/*   Updated: 2022/12/06 05:04:11 by acardona         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINITALK_H
-# define MINITALK_H
+#include "minitalk.h"
 
-# include <unistd.h>
-# include <signal.h>
-# include <stdlib.h>
-
-typedef struct s_buff
+static void	ft_putchar_fd(char c, int fd)
 {
-	size_t			i_buff;
-	unsigned char	buff[2048];
-	char			bit_cpt;
-	struct s_buff	*next;
-}	t_buff;
+	write(fd, &c, 1);
+}
 
-int		ft_atoi(const char *nptr);
-void	ft_putnbr_fd(int n, int fd);
+void	ft_putnbr_fd(int n, int fd)
+{
+	unsigned int	np;
 
-#endif
+	if (n < 0)
+	{
+		np = -1 * n;
+		write(fd, "-", 1);
+	}
+	else
+		np = n;
+	if (np >= 10)
+		ft_putnbr_fd(np / 10, fd);
+	ft_putchar_fd(np % 10 + '0', fd);
+}

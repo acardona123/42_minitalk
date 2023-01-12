@@ -6,7 +6,7 @@
 /*   By: acardona <acardona@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/07 19:39:45 by acardona          #+#    #+#             */
-/*   Updated: 2023/01/11 22:56:11 by acardona         ###   ########.fr       */
+/*   Updated: 2023/01/12 01:39:17 by acardona         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,13 @@ static int	fts_print_error(int err)
 	return (1);
 }
 
+
+#include <stdio.h>
+
+
 static void	ft_check_signal(int sig, siginfo_t *info, void *ucontext)
 {
+	// printf("Signal recu : %d\n", sig);//
 	(void)ucontext;
 	if (info->si_pid != (g_pid >> 1))
 		fts_print_error(1);
@@ -47,25 +52,27 @@ static int	ft_send_bits(unsigned char c)
 {
 	int					mask;
 	struct sigaction	act;
+	int					timer;
 
 	sigemptyset(&act.sa_mask);
 	act.sa_flags = SA_SIGINFO;
 	act.sa_sigaction = &ft_check_signal;
+	mask = 0b100000000;
 	sigaction(SIGUSR1, &act, NULL);
 	sigaction(SIGUSR2, &act, NULL);
-	mask = 0b100000000;
 	while (g_pid != -1 && mask > 1)
 	{
 		mask = mask >> 1;
-		if (mask & c)
+		if (kill(g_pid >> 1, SIGUSR1 + ((mask & c) != 0) * 2) == -1)
 		{
-			if (kill(g_pid >> 1, SIGUSR2) == -1)
-				return (fts_print_error(3));
-		}
-		else if (kill(g_pid >> 1, SIGUSR1) == -1)
+			// printf("g_pid = %lld\n", g_pid >> 1);//
 			return (fts_print_error(3));
-		sleep(5);
-		if (g_pid == -1 || !(g_pid & 1))
+		}
+		timer = -2147483648;
+		while (++timer < 2147483647 && g_pid != -1 && !(g_pid & 1))
+		{
+		}
+		if (timer == 2147483647)
 			return (fts_print_error(2 + (g_pid != -1)));
 		g_pid -= 1;
 	}

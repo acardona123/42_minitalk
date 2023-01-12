@@ -1,0 +1,10 @@
+{
+	"files.associations": {
+		"minitalk.h": "c",
+		"signal.h": "c",
+		"unistd.h": "c",
+		"stdlib.h": "c",
+		"signum-generic.h": "c",
+		"sigval_t.h": "c"
+	}
+}
