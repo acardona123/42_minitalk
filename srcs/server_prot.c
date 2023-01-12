@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   server.c                                           :+:      :+:    :+:   */
+/*   server_prot.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: acardona <acardona@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/07 19:39:48 by acardona          #+#    #+#             */
-/*   Updated: 2023/01/12 18:00:59 by acardona         ###   ########.fr       */
+/*   Updated: 2023/01/12 18:01:38 by acardona         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 
-int	g_pid;
+long long int	g_pid;
 
 /*Adds a new element to the list allowing to store msg befor display*/
 static int	fts_lst_new(t_buff **b)
@@ -35,6 +35,11 @@ static int	fts_lst_new(t_buff **b)
 	*b = new;
 	return (0);
 }
+
+
+
+#include <stdio.h>
+
 
 /*Reads and frees all the registered message, error = 1 || 0*/
 int	ft_lst_read_free(t_buff **b, int error)
@@ -65,6 +70,7 @@ int	ft_lst_bit_add(t_buff **b, int bit)
 {
 	if (!*b && fts_lst_new(b))
 		return (ft_lst_read_free(b, 1));
+	// printf("Toto\n");//
 	((*b)->buff)[(*b)->i_buff] = (((*b)->buff)[(*b)->i_buff] << 1) + (bit == 1);
 	if (++((*b)->bit_cpt) == 8)
 	{
@@ -74,6 +80,7 @@ int	ft_lst_bit_add(t_buff **b, int bit)
 			return (ft_lst_read_free(b, 1));
 		(*b)->bit_cpt = 0;
 	}
+	// printf("Char : %c\n", ((*b)->buff)[(*b)->i_buff]);
 	return (0);
 }
 
@@ -88,13 +95,16 @@ static void	fts_bit_detect(int sig, siginfo_t *info, void *ucontext)
 	if (sig != SIGUSR1 && sig != SIGUSR2)
 		return ;
 	if (g_pid == 0)
-		g_pid = info->si_pid;
-	else if (g_pid != info->si_pid)
+		g_pid = (info->si_pid) << 1;
+	else if (g_pid >> 1 != info->si_pid)
 	{
 		kill(info->si_pid, SIGUSR2);
 		return ;
 	}
+	// printf("Signal recu : %d\n", sig);//
 	bit_added = ft_lst_bit_add(&b, (sig == SIGUSR2));
+	// printf("suite 1 : %d\n", bit_added);//
+	g_pid++;
 	if (bit_added)
 	{
 		if (kill(info->si_pid, SIGUSR2) == -1)
@@ -102,12 +112,16 @@ static void	fts_bit_detect(int sig, siginfo_t *info, void *ucontext)
 		return ;
 	}
 	if (kill(info->si_pid, SIGUSR1) == -1)
+	{
+		// printf("ICI\n");//
 		ft_lst_read_free(&b, 1);
+	}
 }
 
 int	main(int ac, char **av)
 {
 	struct sigaction	act;
+	int					cpt;
 
 	(void) av;
 	g_pid = 0;
@@ -123,6 +137,17 @@ int	main(int ac, char **av)
 	sigaction(SIGUSR2, &act, NULL);
 	while (1)
 	{
+		cpt = -2147483648;
+		while (!(g_pid & 1) && ++cpt < 2147483647)
+		{	
+		}
+		//printf("g_pid : %lld\n", g_pid);//
+		if (g_pid)
+		{
+			g_pid--;
+			if (cpt == 2147483647)
+				fts_bit_detect(0, 0, 0);
+		}
 	}
 	return (0);
 }
@@ -130,6 +155,9 @@ int	main(int ac, char **av)
 /*
 ./client 55194 "$(<joli.txt)"
 
-dans tous les fichiers remplacer 1048 par 1259
-dans l'affichage de la liste ajouter usleep(1100);
+dans .h : buff[1259}
+
+
+ligne 57 : i_buff == 1259
+entre ligne 58 et 59 : usleep(1100);
 */
